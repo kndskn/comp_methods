@@ -1,4 +1,3 @@
-import numpy
 import numpy as np
 
 _ONE = [np.float32(1.0)]
@@ -27,7 +26,7 @@ def find_upl64(num):
 def find_max(num):
     reslt = 0
     cnt = 0
-    while not numpy.isinf(num[0]):
+    while not np.isinf(num[0]):
         reslt = num[0]
         num[0] = num[0] * 2
         cnt += 1
@@ -37,7 +36,7 @@ def find_max(num):
 def find_max32(num):
     reslt = 0
     cnt = 0
-    while not numpy.isinf(num[0]):
+    while not np.isinf(num[0]):
         reslt = num[0]
         num[0] = np.float32(num[0] * 2)
         cnt += 1
