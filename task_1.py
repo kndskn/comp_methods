@@ -8,6 +8,7 @@ _COMP = ['1', '1 + e', '1 + e / 2', '1 + e + e / 2']
 
 
 def find_upl32(num):
+    """This function finds mantissa of float 32"""
     count = 0
     while num[count] != np.float32(0.0):
         num.append(np.float32(1 + 1 / 2 ** count) - np.float32(1.0))
@@ -16,6 +17,7 @@ def find_upl32(num):
 
 
 def find_upl64(num):
+    """This function finds mantissa of float 64"""
     count = 0
     while num[count] != 0.:
         num.append(float(1 + 1 / 2 ** count) - float(1.0))
@@ -24,6 +26,7 @@ def find_upl64(num):
 
 
 def find_max(num):
+    """This function finds max number in float64 Python"""
     reslt = 0
     cnt = 0
     while not np.isinf(num[0]):
@@ -34,6 +37,7 @@ def find_max(num):
 
 
 def find_max32(num):
+    """This function finds max number in float632 Python"""
     reslt = 0
     cnt = 0
     while not np.isinf(num[0]):
@@ -44,6 +48,7 @@ def find_max32(num):
 
 
 def comparison(one, ones, e):
+    """This function compares units with different accuracy"""
     ones.append(one)
     ones.append(one + e)
     ones.append(one + e / 2)
