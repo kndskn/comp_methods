@@ -1,42 +1,38 @@
-from math import *
 import numpy as np
+import matplotlib.pyplot as plt
 
-m = 1
-a0 = 1
-U0 = 1
-h = 1
+m = 1.
+a0 = 1.
+U0 = 10.
+n = 0
+accuracy = 1e-10
+a = 0 + 1e-10
+b = 1 - 1e-10
 
 
 def f(x):
-    return 1 / (tan(sqrt(2 * m * a0 ** 2 * U0 / (h ** 2) * (1 - (-x / U0))))) - sqrt(1 / (-x / U0) - 1)
+    return 1 / (np.tan((2 * (a0 ** 2) * U0 * (1 - x)) ** (1 / 2))) - (1 / x - 1) ** 0.5
 
 
-# def df(x):
-#     return (cos(x)) ** (-2) - 1
-#
-#
-# def ddf(x):
-#     return 2 * sin(x) / (cos(x)) ** 3
-
-accuracy = 1e-10
-num = -log10(accuracy)
-nd = 2
-# kd = 10
-kd = int(log2(pi / accuracy) + log2(10))
-
-
-def dihotomy():
-    a = -pi / 2. + 0.000001 + pi * (nd - 1)
-    b = pi / 2. - 0.000001 + pi * (nd - 1)
-    for i in range(1, kd):
-        if (f((b + a) * 0.5) * f(a)) <= 0:
+def dihotomy(a, b):
+    while (b - a) * 0.5 > accuracy:
+        if f(a) * f((a + b) * 0.5) <= 0:
             b = (b + a) * 0.5
         else:
             a = (b + a) * 0.5
+    print('x =', a)
+    print('f(x) = ', f(a))
+
+
+def draw(a, b):
+    x = np.linspace(a, b, 1000)
+    plt.plot(x, f(x))
+    plt.ylim([-3, 3])
+    plt.show()
 
 
 def main():
-    dihotomy()
+    dihotomy(a, b)
 
 
 if __name__ == '__main__':
