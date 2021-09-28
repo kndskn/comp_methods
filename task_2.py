@@ -3,13 +3,29 @@ import matplotlib.pyplot as plt
 
 # Some parameters
 
-m = 1.  # mass (from Schrodinger equation)
 a0 = 1.  # the width of the potential pit
 U0 = 5.  # the depth of the potential pit
 A = 2. * (a0 ** 2.) * U0
-accuracy = 1e-5  # calculation accuracy
 a = 0 + 1e-10
 b = 1 - 1e-10
+accuracy = 1e-15  # calculation accuracy
+n_max = A / np.pi  # maximum energy level
+
+
+def find_epsilon():
+    eps = 1.
+    i = 0
+    x1 = 0.
+    while 1.0 != 1.0 + eps:
+        eps /= 2
+    return eps
+
+
+def find_max_energy_level():
+    print("Maximum energy level:", int(n_max) - 1,
+          "\nEnter required energy level, less then maximum:\n")
+    n = int(input())
+    return n
 
 
 def f(x):
@@ -34,48 +50,75 @@ def dichotomy(a, b):
         else:
             a = (b + a) * 0.5
     print('Results of Dihotomy method:',
-          '\n-E_0/U =', a, '\n\n\n{DEBUG}', '\nf(x) = ', f(a), '\n')
+          '\n-E_0/U =', a, '\n{DEBUG DICHOTOMY}', '\nf(x) = ', f(a), '\n')
 
 
-def simple_iterations():
+def simple_iterations(n):
     """ This method contains the implementation of finding
-    the zero of a function by the simple iterations method """
+     the zero of a function by the simple iteration method """
+    eps = find_epsilon()
+    n = n
+    l = 1 - np.pi ** 2 * (n + 1) ** 2 / (A ** 2) + eps
+    r = 1 - np.pi ** 2 * n ** 2 / (A ** 2) - eps
+    x = (r + l) * 0.5
+    while True:
+        lya = 1 / df(x)
+        phi = x - lya * f(x)
+        x1 = phi
+        if abs(x - x1) < accuracy:
+            break
+        x = x1
+        # print('f(x) = ', f(x), '\nx = ', x, '\n')
+    print('Results of simple iterations method:', '\n-E_0/U =',
+          x1, '\n{DEBUG SIMPLE ITERATION}', '\nf(x) = ', f(x1), '\n')
 
-    print()
 
-
-def newton_method(A):
+def newton_method(n):
     """ This method contains the implementation of finding
      the zero of a function by the Newton's method """
 
-    eps = 1.
+    eps = find_epsilon()
     i = 0
     x1 = 0.
-    while 1.0 != 1.0 + eps:
-        eps /= 2
-    n_max = A / np.pi
-    print("Maximum energy level:", int(n_max) - 1,
-          "\nEnter required energy level, less then maximum:\n")
-    n = int(input())
-    if n > n_max:
-        print("Enter level less maximum:\n")
-        n = int(input())
-        l = 1 - np.pi ** 2 * (n + 1) ** 2 / (A ** 2) + eps
-        r = 1 - np.pi ** 2 * n ** 2 / (A ** 2) - eps
-    else:
-        l = 1 - np.pi ** 2 * (n + 1) ** 2 / (A ** 2) + eps
-        r = 1 - np.pi ** 2 * n ** 2 / (A ** 2) - eps
+    n = n
+    l = 1 - np.pi ** 2 * (n + 1) ** 2 / (A ** 2) + eps
+    r = 1 - np.pi ** 2 * n ** 2 / (A ** 2) - eps
     x = r
     while x > l:
         i += 1
         x1 = x
         x = x1 - f(x1) / (df(x1))
-        if abs(x - x1) < 1e-10 and abs(f(x)) < 1e-5:
+        if abs(x - x1) < accuracy and abs(f(x)) < 1e-5:
             break
     # print(i) # Print number of iterations
     # print(l, r) # Print segment ends
     print('Results of Newton method:', '\n-E_0/U =',
-          x1, '\n\n\n{DEBUG}', '\nf(x) = ', f(x1), '\n')
+          x1, '\n{DEBUG NEWTON}', '\nf(x) = ', f(x1), '\n')
+
+
+def secant(n):
+    """ This method contains the implementation of finding
+    the zero of a function by the secant method """
+    eps = find_epsilon()
+    n = n
+    l = 1 - np.pi ** 2 * (n + 1) ** 2 / (A ** 2) + eps
+    r = 1 - np.pi ** 2 * n ** 2 / (A ** 2) - eps
+    i = 0
+    dx = (r - l) / 1000
+    x = r
+    while True:
+        i += 1
+        x1 = x
+        if (x1 + dx) > r:
+            x = x1 - f(x1) * dx / (f(x1) - f(x1 - dx))
+        else:
+            x = x1 - f(x1) * 2 * dx / (f(x1 + dx) - f(x1 - dx))
+        if abs(x - x1) < accuracy:
+            break
+    # print(i) # Print number of iterations
+    # print(l, r) # Print segment ends
+    print('Results of secant method:', '\n-E_0/U =',
+          x1, '\n{DEBUG SECANT}', '\nf(x) = ', f(x1), '\n')
 
 
 def draw(a, b):
@@ -90,7 +133,10 @@ def draw(a, b):
 
 def main():
     dichotomy(a, b)
-    newton_method(A)
+    n = find_max_energy_level()
+    simple_iterations(n)
+    newton_method(n)
+    secant(n)
 
 
 if __name__ == '__main__':
