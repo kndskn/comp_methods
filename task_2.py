@@ -22,10 +22,13 @@ def find_epsilon():
 
 
 def find_max_energy_level():
+    eps = find_epsilon()
     print("Maximum energy level:", int(n_max) - 1,
           "\nEnter required energy level, less then maximum:\n")
     n = int(input())
-    return n
+    l = 1 - np.pi ** 2 * (n + 1) ** 2 / (A ** 2) + eps
+    r = 1 - np.pi ** 2 * n ** 2 / (A ** 2) - eps
+    return l, r
 
 
 def f(x):
@@ -40,26 +43,21 @@ def df(x):
            + 1 / (2 * x ** 2 * (1 / x - 1) ** (1 / 2))
 
 
-def dichotomy(a, b):
+def dichotomy(l, r):
     """ This method contains the implementation of finding
     the zero of a function by the dichotomy method """
-
-    while (b - a) * 0.5 > accuracy:
-        if f(a) * f((a + b) * 0.5) <= 0:
-            b = (b + a) * 0.5
+    while (r - l) * 0.5 > accuracy:
+        if f(l) * f((l + r) * 0.5) <= 0:
+            r = (r + l) * 0.5
         else:
-            a = (b + a) * 0.5
+            l = (r + l) * 0.5
     print('Results of Dihotomy method:',
-          '\n-E_0/U =', a, '\n{DEBUG DICHOTOMY}', '\nf(x) = ', f(a), '\n')
+          '\n-E_0/U =', l, '\n{DEBUG DICHOTOMY}', '\nf(x) = ', f(l), '\n')
 
 
-def simple_iterations(n):
+def simple_iterations(l, r):
     """ This method contains the implementation of finding
      the zero of a function by the simple iteration method """
-    eps = find_epsilon()
-    n = n
-    l = 1 - np.pi ** 2 * (n + 1) ** 2 / (A ** 2) + eps
-    r = 1 - np.pi ** 2 * n ** 2 / (A ** 2) - eps
     x = (r + l) * 0.5
     while True:
         lya = 1 / df(x)
@@ -73,16 +71,12 @@ def simple_iterations(n):
           x1, '\n{DEBUG SIMPLE ITERATION}', '\nf(x) = ', f(x1), '\n')
 
 
-def newton_method(n):
+def newton_method(l, r):
     """ This method contains the implementation of finding
      the zero of a function by the Newton's method """
 
-    eps = find_epsilon()
     i = 0
     x1 = 0.
-    n = n
-    l = 1 - np.pi ** 2 * (n + 1) ** 2 / (A ** 2) + eps
-    r = 1 - np.pi ** 2 * n ** 2 / (A ** 2) - eps
     x = r
     while x > l:
         i += 1
@@ -96,13 +90,9 @@ def newton_method(n):
           x1, '\n{DEBUG NEWTON}', '\nf(x) = ', f(x1), '\n')
 
 
-def secant(n):
+def secant(l, r):
     """ This method contains the implementation of finding
     the zero of a function by the secant method """
-    eps = find_epsilon()
-    n = n
-    l = 1 - np.pi ** 2 * (n + 1) ** 2 / (A ** 2) + eps
-    r = 1 - np.pi ** 2 * n ** 2 / (A ** 2) - eps
     i = 0
     dx = (r - l) / 1000
     x = r
@@ -132,11 +122,11 @@ def draw(a, b):
 
 
 def main():
-    dichotomy(a, b)
-    n = find_max_energy_level()
-    simple_iterations(n)
-    newton_method(n)
-    secant(n)
+    l, r = find_max_energy_level()
+    dichotomy(l, r)
+    simple_iterations(l, r)
+    newton_method(l, r)
+    secant(l, r)
 
 
 if __name__ == '__main__':
