@@ -35,7 +35,7 @@ def integrate_simpson_method(f, a, b, n):
     for i in range(1, n, 2):
         sum += 4 * f((b - a) / n * i + a) * h / 3
     for i in range(2, n, 2):
-        sum += 2 * f(*[(b - a) / n * i + a]) * h / 3
+        sum += 2 * f((b - a) / n * i + a) * h / 3
     sum += h * (f(a) + f(b)) / 3
     return sum
 
