@@ -1,7 +1,4 @@
 from math import *
-import numpy as np
-import matplotlib.pyplot as plt
-
 
 # Define functions
 
@@ -27,8 +24,8 @@ def integrate_trapeze_method(f, a, b, n):
     sum = 0
     h = (b - a) / n
     for i in range(1, n):
-        sum += f(*[(b - a) / n * i + a]) * h
-    sum += 0.5 * h * (f(*[a]) + f(*[b]))
+        sum += f((b - a) / n * i + a) * h
+    sum += 0.5 * h * (f(a) + f(b))
     return sum
 
 
@@ -36,10 +33,10 @@ def integrate_simpson_method(f, a, b, n):
     sum = 0
     h = (b - a) / n
     for i in range(1, n, 2):
-        sum += 4 * f(*[(b - a) / n * i + a]) * h / 3
+        sum += 4 * f((b - a) / n * i + a) * h / 3
     for i in range(2, n, 2):
         sum += 2 * f(*[(b - a) / n * i + a]) * h / 3
-    sum += h * (f(*[a]) + f(*[b])) / 3
+    sum += h * (f(a) + f(b)) / 3
     return sum
 
 
