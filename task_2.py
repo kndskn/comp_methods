@@ -6,8 +6,6 @@ import matplotlib.pyplot as plt
 a0 = 1.  # the width of the potential pit
 U0 = 5.  # the depth of the potential pit
 A = 2. * (a0 ** 2.) * U0
-a = 0 + 1e-10
-b = 1 - 1e-10
 accuracy = 1e-15  # calculation accuracy
 n_max = A / np.pi  # maximum energy level
 
