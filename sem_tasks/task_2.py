@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 # Some parameters
 
 a0 = 1.  # the width of the potential pit
-U0 = 5.  # the depth of the potential pit
+U0 = 100.  # the depth of the potential pit
 A = 2. * (a0 ** 2.) * U0
 accuracy = 1e-15  # calculation accuracy
 n_max = A / np.pi  # maximum energy level
@@ -44,29 +44,33 @@ def df(x):
 def dichotomy(l, r):
     """ This method contains the implementation of finding
     the zero of a function by the dichotomy method """
+    i = 0
     while (r - l) * 0.5 > accuracy:
         if f(l) * f((l + r) * 0.5) <= 0:
             r = (r + l) * 0.5
         else:
             l = (r + l) * 0.5
+        i += 1
     print('Results of Dihotomy method:',
-          '\n-E_0/U =', l, '\n{DEBUG DICHOTOMY}', '\nf(x) = ', f(l), '\n')
+          '\n-E_0/U =', l, '\n{DEBUG DICHOTOMY}', '\nf(x) = ', f(l), f'\nNumber of iterations: {i}', '\n')
 
 
 def simple_iterations(l, r):
     """ This method contains the implementation of finding
      the zero of a function by the simple iteration method """
+    i = 0
     x = (r + l) * 0.5
     while True:
-        lya = 1 / df(x)
-        phi = x - lya * f(x)
+        # lya = 1 / df(x)
+        phi = x - 0.00001 * f(x)
         x1 = phi
+        i += 1
         if abs(x - x1) < accuracy:
             break
         x = x1
         # print('f(x) = ', f(x), '\nx = ', x, '\n')
     print('Results of simple iterations method:', '\n-E_0/U =',
-          x1, '\n{DEBUG SIMPLE ITERATION}', '\nf(x) = ', f(x1), '\n')
+          x1, '\n{DEBUG SIMPLE ITERATION}', '\nf(x) = ', f(x1), f'\nNumber of iterations: {i}', '\n')
 
 
 def newton_method(l, r):
@@ -82,10 +86,9 @@ def newton_method(l, r):
         x = x1 - f(x1) / (df(x1))
         if abs(x - x1) < accuracy and abs(f(x)) < 1e-5:
             break
-    # print(i) # Print number of iterations
     # print(l, r) # Print segment ends
     print('Results of Newton method:', '\n-E_0/U =',
-          x1, '\n{DEBUG NEWTON}', '\nf(x) = ', f(x1), '\n')
+          x1, '\n{DEBUG NEWTON}', '\nf(x) = ', f(x1), f'\nNumber of iterations: {i}', '\n')
 
 
 def secant(l, r):
@@ -103,10 +106,9 @@ def secant(l, r):
             x = x1 - f(x1) * 2 * dx / (f(x1 + dx) - f(x1 - dx))
         if abs(x - x1) < accuracy:
             break
-    # print(i) # Print number of iterations
     # print(l, r) # Print segment ends
     print('Results of secant method:', '\n-E_0/U =',
-          x1, '\n{DEBUG SECANT}', '\nf(x) = ', f(x1), '\n')
+          x1, '\n{DEBUG SECANT}', '\nf(x) = ', f(x1), f'\nNumber of iterations: {i}', '\n')
 
 
 def draw(a, b):
@@ -122,7 +124,7 @@ def draw(a, b):
 def main():
     l, r = find_max_energy_level()
     dichotomy(l, r)
-    simple_iterations(l, r)
+    # simple_iterations(l, r)
     newton_method(l, r)
     secant(l, r)
 

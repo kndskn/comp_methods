@@ -3,9 +3,9 @@ from sem_tasks import task_1, task_2, task_3, task_4, task_5, task_6, task_7, ta
 
 def main():
     # task_1.main()
-    task_2.main()
-    task_3.main()
-    # task_4.main()
+    # task_2.main()
+    # task_3.main()
+    task_4.main()
     # task_5.main()
     # task_6.main()
     # task_7.main()
