@@ -14,12 +14,12 @@ def bessel(x, m):
 
 
 def main():
-    i, n = 100., 100.
+    i, n = 100., 1e6
     dx = 2 * pi / n
     delta_x = 1e-10
     for i in range(0, int(n)):
         j0_der = (bessel(0, i * dx + delta_x) - bessel(0, i * dx - delta_x)) / (2 * delta_x)
-        print(f"Result at {i * dx}: j1' + j0 = ", abs(j0_der + bessel(1, i * dx)))
+    print(f"Result at {i * dx}: j1' + j0 = ", abs(j0_der + bessel(1, i * dx)))
 
 
 if __name__ == '__main__':

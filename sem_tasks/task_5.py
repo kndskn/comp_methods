@@ -2,50 +2,33 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def find_coeffs(x, y, c, n):
-    f = np.zeros(n)
-    for i in range(n):
-        f[i] = y[i]
-    c[0] = f[0]
-    for i in range(1, n):
-        for j in range(n - i):
-            f[j] = (f[j + 1] - f[j]) / (x[j] - x[j])
-        c[i] = f[0]  # Самый первый коэффициент, получившийся в новой итерации, является нашим очередным искомым к-том
-
-
-def polynom(n, arg, x, c):
-    temp = 0.
-    result = 0.
-    for k in range(n):
-        temp = c[k]
-        for i in range(k):
-            temp *= (arg - x[i])
-    result += temp
-    return result
+def find_polynom(x, y, n, t):
+    P_n = 0
+    for i in range(n + 1):
+        numer = 1
+        denomin = 1
+        for j in range(n + 1):
+            if i != j:
+                numer *= t - x[j]
+                denomin *= x[i] - x[j]
+        P_n += y[i] * numer / denomin
+    return P_n
 
 
 def main():
-    m = 100
     n = 4
-    x = np.zeros(n)
-    y = np.zeros(n)
-    c = np.zeros(n)
-    arg = np.zeros(m)
-    arg_pol = np.zeros(m)
-    res = np.zeros(m)
-    res_pol = np.zeros(m)
-    for k in range(n):
-        x[k] = 1 + k / n
-        y[k] = np.log(x[k])
-    find_coeffs(x, y, c, n)
-    for k in range(n):
-        res_pol[k] = polynom(n, 1 + k / 100, x, c)
-        arg_pol[k] = 1 + k / 100
-    for k in range(100):
-        arg[k] = 0.5 + k / 50
-        res[k] = polynom(n, 0.5 + k / 50, x, c - np.log(0.5 + k / 50))
-    plt.plot(arg, res)
-    plt.plot(arg_pol, res_pol)
+    x_k = [(1 + k / n) for k in range(n + 1)]
+    y_k = [np.log(x) for x in x_k]
+    s = 10 ** 2
+    x = [0.5 + i / s * 2 for i in range(s + 1)]
+    Lagrange = [find_polynom(x_k, y_k, n, t) for t in x]
+    Ln = [np.log(t) for t in x]
+    plt.plot(x, Lagrange, 'r')
+    plt.plot(x_k, y_k, 'bo', markersize=4)
+    plt.ylim(-1 / 4, 1)
+    plt.xlim(1 / 2, 5 / 2)
+    plt.grid(True)
+    plt.legend()
     plt.show()
 
 
