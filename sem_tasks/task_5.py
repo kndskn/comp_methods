@@ -15,7 +15,7 @@ def find_polynom(x, y, n, t):
     return P_n
 
 
-def main():
+def draw():
     n = 4
     x_k = [(1 + k / n) for k in range(n + 1)]
     y_k = [np.log(x) for x in x_k]
@@ -30,6 +30,10 @@ def main():
     plt.grid(True)
     plt.legend()
     plt.show()
+
+
+def main():
+    draw()
 
 
 if __name__ == '__main__':
