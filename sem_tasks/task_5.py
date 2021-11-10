@@ -22,11 +22,12 @@ def draw():
     s = 10 ** 2
     x = [0.5 + i / s * 2 for i in range(s + 1)]
     Lagrange = [find_polynom(x_k, y_k, n, t) for t in x]
-    Ln = [np.log(t) for t in x]
-    plt.plot(x, Lagrange, 'r')
-    plt.plot(x_k, y_k, 'bo', markersize=4)
-    plt.ylim(-1 / 4, 1)
-    plt.xlim(1 / 2, 5 / 2)
+    diff = [Lagrange[k] - np.log(x)[k] for k in range(s+1)]
+    # plt.plot(x, Lagrange, 'r')
+    plt.plot(x, diff)
+    # plt.plot(x_k, y_k, 'bo', markersize=4)
+    # plt.ylim(-1 / 4, 1)
+    # plt.xlim(1 / 2, 5 / 2)
     plt.grid(True)
     plt.legend()
     plt.show()

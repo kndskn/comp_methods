@@ -22,7 +22,6 @@ def Euler(y_0, N_iter, dh):
     d = []
     d.append(y.copy())
     for i in tqdm(range(N_iter-1)):
-        # print((0.25*Step(y) + 0.75*Step(y + 2/3*dh_vec*Step(y)))*dh_vec)
         y += Step(y)*dh
         d.append(y.copy())
     # print(d)
