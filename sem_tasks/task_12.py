@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 rec = True
-im= True
+im = True
 N = 1000
 T = 2*np.pi
 a0, a1 = 10, 0.002
