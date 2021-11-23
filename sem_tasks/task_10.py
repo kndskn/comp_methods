@@ -1,46 +1,61 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.integrate import quad
 
 L = 1
+m = 0
 N = 10
 Nt = 100
 dt = 1e-2
-h = L/N
-T = Nt*dt
-SHOW_EVOL = True
+h = L / N
+T = Nt * dt
+SHOW_EVOL = False
 SHOW_MAX_T = True
+f_init = lambda x: x * (1 - x / L) ** 2
+f_init_2 = lambda x: x * (1 - x / L) ** 2 * np.sin(np.pi * m * x)
 
 
-def f_init(x):
-    return x*(1-x/L)**2
+def u(x, t):
+    global m
+    result = 0
+    n = 2
+    for i in range(1, n):
+        m = i
+        result += 2 * quad(f_init_2, 0, 1)[0] * np.sin(np.pi * i * x) * np.exp(-(np.pi * i) ** 2 * t)
+    return result
 
 
 def diff_operator(in_v):
-    ans_v = [0]*(len(in_v))
+    ans_v = [0] * (len(in_v))
     ans_v[0] = 0
-    ans_v[len(in_v)-1] = 0
+    ans_v[len(in_v) - 1] = 0
     for i in range(1, len(in_v) - 1):
-        ans_v[i] = (in_v[i+1] - 2*in_v[i] + in_v[i-1])/h**2
+        ans_v[i] = (in_v[i + 1] - 2 * in_v[i] + in_v[i - 1]) / h ** 2
     return ans_v
 
 
 def run_through(a, b, c, d):
     L = len(a)
     a[0] = 0
-    c[L-1] = 0
-    ans = [0]*L
+    c[L - 1] = 0
+    ans = [0] * L
     for i in range(1, L):
-        ksi = a[i]/b[i-1]
+        ksi = a[i] / b[i - 1]
         a[i] = 0
-        b[i] = b[i] - ksi*c[i-1]
-        d[i] = d[i] - ksi*d[i-1]
-    ans[L-1] = (d[L-1]/b[L-1])
-    for i in range(L-2, -1, -1):
-        ans[i] = ((d[i] - c[i]*ans[i+1]) / b[i])
+        b[i] = b[i] - ksi * c[i - 1]
+        d[i] = d[i] - ksi * d[i - 1]
+    ans[L - 1] = (d[L - 1] / b[L - 1])
+    for i in range(L - 2, -1, -1):
+        ans[i] = ((d[i] - c[i] * ans[i + 1]) / b[i])
     return ans
 
 
 def main():
+    t = 0
+    x = 0
+    uMax = 0
+    u1 = [0] * (N + 1)
+    u2 = [0] * (Nt + 1)
     # initial V
     v_0 = []
     for i in range(N + 1):
@@ -78,8 +93,19 @@ def main():
     else:
         plt.close()
     tspace = np.linspace(0, T, Nt + 1)
-    plt.plot(tspace, T_max)
+    for i in range(Nt + 1):
+        t += i * dt
+        for j in range(N + 1):
+            x += h * j
+            u1[j] = u(x, t)
+            if uMax <= u1[j]:
+                uMax = u1[j]
+        u2[i] = uMax
+        uMax = 0
+    plt.plot(tspace, u2, label='Analytic')
+    plt.plot(tspace, T_max, label='Solved')
     plt.xlim([0 - T * 0.05, T * 1.05])
+    plt.legend()
     plt.grid()
     if SHOW_MAX_T:
         plt.show()
@@ -89,3 +115,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
