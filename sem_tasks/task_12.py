@@ -50,7 +50,7 @@ def main():
         wspace = np.arange(0, N, 1) / T  # - (N-1)/2/T)
         plt.plot(wspace, 2 * np.abs(image), label='rect')
         plt.plot(wspace, 2 * np.abs(image_H), label='Hann')
-        plt.xlim([0, np.max(wspace) / 2])
+        # plt.xlim([0, np.max(wspace) / 2])
         plt.yscale('log')
         plt.legend()
         plt.show()
