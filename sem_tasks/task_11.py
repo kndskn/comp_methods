@@ -1,17 +1,19 @@
 import numpy as np
+from math import *
 import matplotlib.pyplot as plt
 from scipy import sparse
-from tqdm import tqdm
 
-INV = True
-Bound = 10
-N = 100
+N = 1000
+Nit = 1000
+Bound = pi
 h = 2 * Bound / N
-k = 100  # number of iteration
-xspace = np.linspace(-Bound, Bound, N + 1)
+xspace_cont = np.linspace(-Bound, Bound, 10 ** 5)
+xspace = np.linspace(-Bound, Bound, N)
+accuracy = 1e-14
 
-def U(x):
-    return 0.5 * x ** 2
+
+def U(arg):
+    return (arg ** 2) / 2
 
 
 def init_U_matrix():
@@ -20,63 +22,70 @@ def init_U_matrix():
 
 
 def matr_der_2():
-    b = [0.] + [-2 / h ** 2] * (N - 1) + [0.]
-    a = [1 / h ** 2] * (N - 1) + [0.]
-    c = [0.] + [1 / h ** 2] * (N - 1)
+    b = [0] + [-2 / h ** 2] * (N - 2) + [0]
+    a = [1 / h ** 2] * (N - 2) + [0]
+    c = [0] + [1 / h ** 2] * (N - 2)
     ans = sparse.diags([b, a, c], [0, -1, 1]).A
     return ans
 
 
-def norm(f):
-    return np.trapz(f ** 2) * h
-
-
-def find_eig(psi_0, n_iter):
-    psi = psi_0.copy()
-    l = 0
-    for i in range(n_iter):
-        if INV:
-            psi_it = A_inv.dot(psi).copy()
-        else:
-            psi_it = A.dot(psi).copy()
-        if i == n_iter - 1:
-            l = np.trapz(psi * A.dot(psi)) * h
-        psi_it = psi_it / np.sqrt(norm(psi_it))
-        psi = psi_it.copy()
-    return psi, l
-
-
-def update_Const(new_N, new_Bound):
-    global N, h, xspace, psi_initial, der_2_matr, A, A_inv, U_matr
-    N = new_N
-    h = 2 * new_Bound / new_N
-    xspace = np.linspace(-Bound, Bound, N + 1)
-    psi_initial = (1 + xspace) * np.exp(-xspace ** 4)  # initial psi(x)
+def matrix(X_min, X_max):
+    global x, A
+    x = np.linspace(X_min, X_max, N)
     U_matr = init_U_matrix()
     der_2_matr = matr_der_2()
     A = -0.5 * der_2_matr + U_matr
-    A_inv = np.linalg.inv(-0.5 * der_2_matr + U_matr - 0 * np.eye(U_matr.shape[0]))
 
 
-def main():
-    update_Const(N, Bound)
-    sol, lam = find_eig(psi_initial, k)
-    plt.plot(xspace, sol, label="N = " + str(N))
-    print("Energy of ground state E = ", lam)
-    xspace_cont = np.linspace(-Bound, Bound, 10 ** 5)
+def norm(f):
+    return np.sqrt(np.trapz(f ** 2, dx=h))
+
+
+def energy(f):
+    return np.trapz(f * A.dot(f), dx=h)
+
+
+def solve(psi0):
+    end = 0
+    psi = [psi0]
+    fig = plt.figure(figsize=(7, 7))
+    ax = fig.add_subplot(1, 1, 1)
+    e = energy(psi[0])
+    for i in range(1, Nit - 1):
+        psi.append(np.linalg.solve(A, psi[i-1]))
+        psi[i] = psi[i] / (norm(psi[i]))
+        if abs(e - energy(psi[i])) > accuracy:
+            e = energy(psi[i])
+        else:
+            e = energy(psi[i])
+            end = i
+            break
+    # i = 1
+    # psi.append(np.linalg.solve(A, psi[i - 1]))
+    # psi[1] = psi[1] / (norm(psi[1]))
+    # while abs(e - energy(psi[i - 1])) > accuracy:
+    #     psi.append(np.linalg.solve(A, psi[i - 1]))
+    #     psi[i] = psi[i] / (norm(psi[i]))
+    #     e = energy(psi[i])
+    #     end = i
+    #     i += 1
+
+    print(e)
+    print(end)
+    ax.plot(x, psi[end - 1] / norm(psi[end - 1]), label='psi')
+    # plt.title('E=' + str(round(e, 3)))
     plt.plot(xspace_cont, np.exp(-0.5 * xspace_cont ** 2) * (np.pi) ** -0.25, label="Accurate solution")
     plt.legend()
     plt.grid()
     plt.show()
 
 
+def main():
+    matrix(-Bound, Bound)
+    z = np.linspace(-Bound, Bound, N)
+    psi0 = z + z ** 2 + z ** 3
+    solve(psi0)
+
+
 if __name__ == '__main__':
     main()
-    # e = []
-    # for i in range(100):
-    #     e.append(abs(find_eig(psi_initial, i)[1] - 1.5))
-    # xs = np.arange(100)
-    # plt.plot(xs, e)
-    # plt.yscale('log')
-    # plt.xscale('log')
-    # plt.show()
